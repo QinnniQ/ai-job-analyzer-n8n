@@ -1,0 +1,157 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const body = item.json.body || {};\n  const textRaw = body.text;\n\n  if (!textRaw) {\n    return {\n      json: {\n        ok: false,\n        error: \"Missing required field: text\",\n        example: { text: \"Paste the job description here...\" }\n      }\n    };\n  }\n\n  const text = String(textRaw).toLowerCase();\n\n  const SKILLS = [\n    \"python\", \"sql\", \"fastapi\", \"flask\", \"django\",\n    \"docker\", \"kubernetes\", \"aws\", \"azure\", \"gcp\",\n    \"llm\", \"rag\", \"langchain\", \"vector\", \"chroma\", \"pinecone\",\n    \"pytorch\", \"tensorflow\", \"pandas\", \"numpy\",\n    \"etl\", \"airflow\", \"dbt\", \"spark\",\n    \"mlops\", \"ci/cd\", \"github actions\"\n  ];\n\n  const found = SKILLS\n    .filter(s => text.includes(s.toLowerCase()))\n    .map(s => s);\n\n  return {\n    json: {\n      ok: true,\n      found_skills: found,\n      found_count: found.length,\n      preview: textRaw.slice(0, 120) + (textRaw.length > 120 ? \"...\" : \"\")\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "f24f04b8-c2a4-497b-8ee8-0ac946b623bd",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-user",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "a3319747-b8d1-464e-9c6d-3b56dc0818da",
+      "name": "Webhook",
+      "webhookId": "4e53d3f6-d041-4fa2-8532-d259347d2bf7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        0
+      ],
+      "id": "cb8b4b74-6ef9-4fd1-8e58-287efbd50413",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "You are a strict JSON generator.\n\nGiven the job description text, return ONLY valid JSON with this schema:\n{\n  \"title_guess\": string,\n  \"seniority_guess\": string,\n  \"top_skills\": string[],\n  \"summary_bullets\": string[],\n  \"interview_questions\": string[]\n}\n\nRules:\n- No markdown\n- No extra keys\n- 3-8 top_skills\n- 4-6 summary_bullets\n- 3-5 interview_questions"
+            },
+            {
+              "content": "=Job description:\n{{$node[\"Webhook\"].json[\"body\"][\"text\"]}}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d7c3908b-4922-47ef-95fc-0e5fa8c86ea4",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "CGnxklEUYPjaph1p",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  // The OpenAI node returns a response object\n  const response = item.json;\n\n  // Extract assistant text from Responses API structure\n  const text =\n    response.output?.[0]?.content?.[0]?.text ||\n    \"No assistant text found.\";\n\n  // Try to parse JSON (since we instructed it to return JSON only)\n  let parsed;\n  try {\n    parsed = JSON.parse(text);\n  } catch (e) {\n    parsed = {\n      ok: false,\n      error: \"Model did not return valid JSON\",\n      raw_output: text\n    };\n  }\n\n  return {\n    json: parsed\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "5f43e270-3ca1-42c9-abe6-1987acce96dc",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "269d215b-02a5-4372-b41d-4c090bb0bb1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b7a0d28748b075317d65a41b3686210a37b9697df71bd786e4d1266ca238ff6"
+  },
+  "id": "vDISrqnuiJZUcwke",
+  "tags": []
+}

@@ -1,0 +1,16 @@
+﻿{
+  "title_guess": "Senior AI Engineer",
+  "seniority_guess": "Senior",
+  "top_skills": ["Python", "FastAPI", "Docker", "AWS", "RAG", "LangChain"],
+  "summary_bullets": [
+    "Build scalable LLM-backed systems",
+    "Develop production-grade APIs",
+    "Containerize services with Docker",
+    "Work with cloud infrastructure (AWS)"
+  ],
+  "interview_questions": [
+    "How have you deployed LLM systems to production?",
+    "How do you design scalable APIs (FastAPI) under load?",
+    "What’s your approach to RAG evaluation and retrieval quality?"
+  ]
+}
