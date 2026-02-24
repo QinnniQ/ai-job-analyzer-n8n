@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/ai-job-analyzer-banner.png" width="100%">
+  <img src="assets/ai-job-analyzer-banner.png" width="800">
 </p>
 
 <br>
