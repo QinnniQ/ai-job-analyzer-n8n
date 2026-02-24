@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="assets/ai-job-analyzer-banner.png" width="100%">
+</p>
+
+<br>
+
 # AI Job Post Analyzer (n8n + OpenAI)
 
 ## Overview
