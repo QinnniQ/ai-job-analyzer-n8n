@@ -16,11 +16,13 @@ It accepts a raw job description and returns structured, validated JSON includin
 
 ## Architecture
 
+```mermaid
 flowchart LR
   A[Webhook POST] --> B[Validate Input]
   B --> C[OpenAI Chat]
   C --> D[Parse JSON]
   D --> E[Respond JSON]
+```
 
 ---
 
