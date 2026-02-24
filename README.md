@@ -1,4 +1,4 @@
-﻿# AI Job Post Analyzer (n8n + OpenAI)
+# AI Job Post Analyzer (n8n + OpenAI)
 
 ## Overview
 
@@ -12,58 +12,38 @@ It accepts a raw job description and returns structured, validated JSON includin
 - Summary bullets
 - Suggested interview questions
 
-The workflow enforces strict JSON formatting and safely parses model responses for production-style API usage.
-
 ---
 
 ## Architecture
 
-Webhook  
-→ Input Validation (Code Node)  
-→ OpenAI (Structured JSON Prompting)  
-→ JSON Parsing Layer  
-→ Respond to Webhook  
+```mermaid
+flowchart LR
+  A[Webhook (POST /test-user)] --> B[Validate Input (Code)]
+  B --> C[OpenAI Chat (Structured JSON)]
+  C --> D[Parse JSON (Code)]
+  D --> E[Respond to Webhook (JSON)]
+```
 
 ---
 
-## Key Concepts Demonstrated
+## Run Locally
 
-- Webhook-based API endpoint creation
-- JSON payload validation
-- Structured LLM prompting
-- Model response parsing & error handling
-- Clean API response formatting
-- Workflow orchestration using n8n
+1. Import `workflow.json` into n8n.
+2. Add your OpenAI credentials.
+3. Execute the workflow (listening mode).
+4. Send the example request:
 
----
-
-## Example Request
-
-See `example_request.json`
-
-## Example Response
-
-See `example_response.json`
-
----
-
-## Tech Stack
-
-- n8n (workflow orchestration)
-- OpenAI API (gpt-4o-mini)
-- Webhooks (REST API pattern)
-- JavaScript validation/parsing layer
+```powershell
+Invoke-RestMethod -Method Post `
+  -Uri "http://localhost:5678/webhook-test/test-user" `
+  -ContentType "application/json" `
+  -Body (Get-Content .\example_request.json -Raw)
+```
 
 ---
 
 ## Why This Matters
 
-Most LLM demos stop at generating text.
+This demonstrates production-style LLM automation:
 
-This project demonstrates:
-- Controlled structured output
-- Safe JSON parsing
-- API-ready responses
-- Automation + AI orchestration
-
-Bridging automation and production-grade AI system design.
+validated inputs → structured JSON prompting → safe parsing → API-ready responses.
